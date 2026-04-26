@@ -14,13 +14,13 @@ COLUMNS = [
     "job", "liable_people", "telephone", "foreign_worker", "credit_risk",
 ]
 #Separated using Claude <-> Criterion: not a raw number, e.g. "checking account"
-Categorical = [               
+CATEGORICAL = [               
     "checking_account", "credit_history", "purpose", "savings",
     "employment", "personal_status", "other_debtors", "property",
     "other_installments", "housing", "job", "telephone", "foreign_worker",
 ]
 #Separated using Claude <-> Criterion: raw number, e.g. "age"
-Numerical = [
+NUMERIC = [
     "duration", "credit_amount", "installment_rate",
     "residence_since", "age", "existing_credits", "liable_people",
 ]
@@ -34,4 +34,32 @@ def load_data() -> pd.DataFrame:
     #Maybe it's better to implement try/except here
 
     return df
-def preprocess() ->
+
+def preprocess(df):
+    # get target
+    target = []
+    for val in df["credit_risk"]:
+        if val == 2:
+            target.append(1)
+        else:
+            target.append(0)
+    y = np.array(target)
+
+    df = df.drop("credit_risk", axis=1)
+
+    # encode categoricals
+    for col in CATEGORICAL:
+        unique_vals = list(df[col].unique())
+        df[col] = df[col].apply(lambda x: unique_vals.index(x))
+
+    # scale manually
+    X = df[NUMERIC + CATEGORICAL].values.astype(float)
+    for i in range(X.shape[1]):
+        col_mean = X[:, i].mean()
+        col_std  = X[:, i].std()
+        if col_std != 0:
+            X[:, i] = (X[:, i] - col_mean) / col_std
+
+    return X, y
+
+    
