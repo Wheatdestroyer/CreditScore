@@ -24,3 +24,9 @@ def load_data() -> pd.DataFrame:
 
     return df
 
+#
+def preprocess(df: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
+    """Encode categoricals, scale numerics. Returns (X, y)."""
+    df = df.copy()
+    y = (df.pop("credit_risk") == 2).astype(int).values  # 1 = bad credit
+
