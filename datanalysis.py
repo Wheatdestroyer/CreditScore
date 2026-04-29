@@ -5,6 +5,8 @@ Use the German Credit Dataset (UCI, 1000 records, 20 features).
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 COLUMNS = [
     "checking_account", "duration", "credit_history", "purpose",
@@ -25,7 +27,7 @@ NUMERIC = [
     "residence_since", "age", "existing_credits", "liable_people",
 ]
 
-def load_data() -> pd.DataFrame:
+def load_data():
     url = (
         "https://archive.ics.uci.edu/ml/machine-learning-databases"
         "/statlog/german/german.data"
