@@ -62,4 +62,62 @@ def preprocess(df):
 
     return X, y
 
+#Histograms
+def plot_eda(df: pd.DataFrame, save_path="credit_eda.png"):
+    fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+    fig.suptitle("Part 1 — Credit Data EDA", fontsize=14, fontweight="bold")
+
+    colors = {1: "#1D9E75", 2: "#D85A30"}
+    labels = {1: "Good", 2: "Bad"}
+
+    # Class distribution
+    ax = axes[0, 0]
+    counts = df["credit_risk"].value_counts()
+    ax.bar([labels[k] for k in counts.index], counts.values,
+           color=[colors[k] for k in counts.index], width=0.4)
+    ax.set_title("Class Distribution")
+    ax.spines[["top","right"]].set_visible(False)
+
+    # Credit amount by class
+    ax = axes[0, 1]
+    for cls in [1, 2]:
+        ax.hist(df[df.credit_risk == cls]["credit_amount"], bins=25,
+                alpha=0.6, color=colors[cls], label=labels[cls])
+    ax.set_title("Credit Amount by Risk")
+    ax.set_xlabel("Amount (DM)")
+    ax.legend()
+    ax.spines[["top","right"]].set_visible(False)
+
+    # Duration by class
+    ax = axes[1, 0]
+    for cls in [1, 2]:
+        ax.hist(df[df.credit_risk == cls]["duration"], bins=20,
+                alpha=0.6, color=colors[cls], label=labels[cls])
+    ax.set_title("Loan Duration by Risk")
+    ax.set_xlabel("Months")
+    ax.legend()
+    ax.spines[["top","right"]].set_visible(False)
+
+    # Age by class
+    ax = axes[1, 1]
+    for cls in [1, 2]:
+        ax.hist(df[df.credit_risk == cls]["age"], bins=20,
+                alpha=0.6, color=colors[cls], label=labels[cls])
+    ax.set_title("Age by Risk")
+    ax.set_xlabel("Age")
+    ax.legend()
+    ax.spines[["top","right"]].set_visible(False)
+
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=150)
+    plt.close()
+    print(f"EDA plot saved → {save_path}")
+
+
+if __name__ == "__main__":
+    df = load_data()
+    print(df[["age", "credit_amount", "duration", "credit_risk"]].describe().round(1))
+    X, y = preprocess(df)
+    print(f"\nX: {X.shape} | Bad-credit rate: {y.mean()*100:.1f}%")
+    plot_eda(df)
     
